@@ -37,6 +37,3 @@ module ZillowApi
 
   end
 end
-
-'http://www.zillow.com/webservice/.htm?zws-id=X1-ZWz19emx3ram17_4ye7m&address=2114+Bigelow+Ave&citystatezip=Seattle+WA
-'http://www.zillow.com/webservice/GetDeepSearchResults.htm?zws-id=X1-ZWz19emx3ram17_4ye7m&address=2114+Bigelow+Ave&citystatezip=Seattle+WA'
