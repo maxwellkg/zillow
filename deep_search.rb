@@ -3,14 +3,22 @@ module ZillowApi
     @path = 'GetDeepSearchResults'
 
     attr_accessor :criteria
-    attr_reader :results
+    attr_reader :result
 
-    def initialize
-
+    def initialize(criteria)
+      @criteria = criteria
+      @loaded = false
     end
 
     def execute
-      @results = Request.new(path: @path, options: criteria).execute.response['searchresults']['response']['results']
+      @result = Request.new(path: self.class.instance_variable_get('@path'), options: criteria).execute['searchresults']['response']['results']['result']
+      @loaded = true
+
+      @result
+    end
+
+    def zpid
+      @results['zpid']
     end
 
     def loaded?

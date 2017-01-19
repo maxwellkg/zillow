@@ -27,6 +27,7 @@ module ZillowApi
     # Executes the request
 
     def execute
+      puts "REQUESTING #{uri}"
       res = Net::HTTP.get_response(uri)
       if res.is_a?(Net::HTTPSuccess)
         @response = Hash.from_xml(res.body)
