@@ -16,9 +16,6 @@ module ZillowApi
 
     # Generate the url for the request
 
-    # @param [String] path, the web service name
-    # @param [Hash] options, additional request options
-
     def uri
       opts = URI.encode_www_form(options)
       URI("#{BASE}/#{@path}.htm?zws-id=#{CREDENTIALS[:zwsid]}&#{opts}")

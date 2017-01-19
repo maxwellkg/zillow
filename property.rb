@@ -1,5 +1,5 @@
 module ZillowApi
-  class Property
+  class Property < Base
     extend ZillowApi::Inflector
 
     @path = 'GetUpdatedPropertyDetails'
@@ -27,19 +27,14 @@ module ZillowApi
       end
     end
 
-    def attributes
-      atts = {}
-      self.instance_variables.each { |v| atts[v.to_s.gsub('@','')] = self.instance_variable_get(v) }
-      atts
-    end
-
     # finds information on a property specified by its zpid
     # combines information from the Property Details API and the Deep Search API
     #
+    # Params:
+    # +zpid+:: The Zillow Property ID for the property for which to obtain information; the parameter type is an integer
     #
     # @example
-    #
-    # prop = ZillowApi::Property.find()
+    # prop = ZillowApi::Property.find('48749425')
 
     def self.find(zpid)
       opts = {:zpid => zpid}
@@ -62,9 +57,13 @@ module ZillowApi
     # finds information on a property specified by its address
     # combines information from the Property Details API and the Deep Search API
     #
-    # @example
+    # Params:
+    # +address+:: The address of the property to search. This string should be URL encoded.
+    # +citystatezip+:: The city+state combination and/or ZIP code for which to search. This string should be URL encoded. Note that giving both city and state is required. Using just one will not work.
+    # +rentzestimage+:: Return Rent Zestimate information if available (boolean true/false, default: false)
     #
-    # prop = ZillowApi::Property.where(address: '2114 Bigelow Ave', city: 'Seattle', state: 'WA')
+    # @example
+    # prop = ZillowApi::Property.where(address: '2114 Bigelow Ave', citystatezip: 'Seattle, WA')
     # 
 
     def self.where(address:, citystatezip:, rentzestimate: false)

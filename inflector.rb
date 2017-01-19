@@ -4,6 +4,9 @@ module ZillowApi
     String.send(:include, self)
     Symbol.send(:include, self)
 
+    # Shorthand for rubifying (CamelCase --> snake_case)
+    # strings and symbols
+
     def rubify
       case self
       when Symbol
