@@ -27,7 +27,6 @@ module ZillowApi
     # Executes the request
 
     def execute
-      puts "REQUESTING #{uri}"
       res = Net::HTTP.get_response(uri)
       if res.is_a?(Net::HTTPSuccess)
         @response = Hash.from_xml(res.body)
@@ -38,3 +37,6 @@ module ZillowApi
 
   end
 end
+
+'http://www.zillow.com/webservice/.htm?zws-id=X1-ZWz19emx3ram17_4ye7m&address=2114+Bigelow+Ave&citystatezip=Seattle+WA
+'http://www.zillow.com/webservice/GetDeepSearchResults.htm?zws-id=X1-ZWz19emx3ram17_4ye7m&address=2114+Bigelow+Ave&citystatezip=Seattle+WA'
