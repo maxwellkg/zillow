@@ -4,16 +4,16 @@ module Zillow
       extend Zillow::Inflector
 
       # Zestimates can either be instantiated through:
-      #   1. A call to the GetZestimate ZPI (ZillowApi::Zestimate)
-      #   2. A call to the DeepSearchResults API (ZillowApi::DeepSearch)
-      #   3. Instantiation of an instance of ZillowApi::Property
+      #   1. A call to the GetZestimate ZPI (Zillow::Api::GetZestimate)
+      #   2. A call to the DeepSearchResults API (Zillow::Api::GetDeepSearchResults)
+      #   3. A call to the SearchResults API (Zillow::Api::GetSearchResults)
       #
       # Zestimates can also be associated with an object of class
-      # ZillowApi::Property (because objects of this class require a
+      # Zillow::Models::Property (because objects of this class require a
       # a DeepSearch to be performed in their instantiation)
       #
-      # Instances of ZillowApi::Zestimate may or may not have a corresponding
-      # instance of ZillowApi::RentZestimate
+      # Instances of Zillow::Models::Zestimate may or may not have a corresponding
+      # instance of Zillow::Models::RentZestimate
 
       def initialize(attrs)
         attrs.each do |k,v|
@@ -35,8 +35,8 @@ module Zillow
       # +rentzestimate+:: Return Rent Zestimate information if available (boolean true/false, default: false)
       #
       # @example
-      # ZillowApi::Zestimate.where(zpid: '48749425')
-      # ZillowApi::Zestimate.where(zpid: '48749425', rentzestimate: true)
+      # Zillow::Models::Zestimate.where(zpid: '48749425')
+      # Zillow::Models::Zestimate.where(zpid: '48749425', rentzestimate: true)
 
       def self.where(options)
         self.new(ZillowApi::Api::Calls::GetZestimate.new(options).execute['zestimate']['response'])

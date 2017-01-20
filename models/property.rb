@@ -15,11 +15,11 @@ module Zillow
               self.set_readers(characteristic, value)
             end
           elsif k == 'zestimate'
-            # attach a corresponding ZillowApi::Zestimate
+            # attach a corresponding Zillow::Models::Zestimate
             self.class_eval { attr_reader :zestimate }
             self.instance_variable_set("@zestimate", Zestimate.new(v.merge({:property => self})))
           elsif k == 'rentzestimate'
-            # attach a corresponding ZillowApi::RentZestimate
+            # attach a corresponding Zillow::Models::RentZestimate
             self.class_eval { attr_reader :rent_zestimate }
             self.instance_variable_set("@rentzestimate", RentZestimate.new(v.merge({:property => self})))
           else
@@ -64,7 +64,7 @@ module Zillow
       # +rentzestimage+:: Return Rent Zestimate information if available (boolean true/false, default: false)
       #
       # @example
-      # prop = ZillowApi::Property.where(address: '2114 Bigelow Ave', citystatezip: 'Seattle, WA')
+      # prop = Zillow::Models::Property.where(address: '2114 Bigelow Ave', citystatezip: 'Seattle, WA')
       # 
 
       def self.where(address:, citystatezip:)

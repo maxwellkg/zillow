@@ -7,9 +7,10 @@ module Zillow
       # instantiated through:
       #   1. Results from a call to the GetZestimate API with parameter rentzestimate set to true
       #   2. Results from a call to the GetDeepSearchResults API with parameter rentzestimate set to true
+      #   3. Results from a call to the GetSearchResults API with parameter rentzestimate set to true
       #
       # Given the above, Rent Zestimates may also be included in objects of belonging to
-      # ZillowApi::Property, ZillowApi::Zestimate, and ZillowApi::DeepSearch
+      # Zillow::Models::Property, Zillow::Models::Zestimate, and Zillow::Api::GetDeepSearchResults
 
 
       def initialize(attrs)
