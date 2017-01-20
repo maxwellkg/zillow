@@ -82,6 +82,12 @@ module Zillow
         self.new(attrs)
       end
 
+      def attributes
+        atts = {}
+        self.instance_variables.each { |v| atts[v.to_s.gsub('@','')] = self.instance_variable_get(v) }
+        atts
+      end
+
       protected
 
         def set_readers(att, value)
