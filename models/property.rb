@@ -3,12 +3,8 @@ module Zillow
     class Property
       extend Zillow::Inflector
 
-      @path = 'GetUpdatedPropertyDetails'
-
       # Retrieve details for a specified property
-
-      # Documentation for the Property Details API can be found here
-      # http://www.zillow.com/howto/api/PropertyDetailsAPIOverview.htm
+      # Combines information from the Property Details API and the Deep Search API
 
       def initialize(attrs)
         attrs.each do |k,v|
@@ -32,30 +28,30 @@ module Zillow
         end
       end
 
-      # finds information on a property specified by its zpid
-      # combines information from the Property Details API and the Deep Search API
-      #
       # Params:
       # +zpid+:: The Zillow Property ID for the property for which to obtain information; the parameter type is an integer
       #
       # @example
-      # prop = ZillowApi::Property.find('48749425')
+      # prop = Zillow::Models::Property.find('48749425')
 
       def self.find(zpid)
-        opts = {:zpid => zpid}
+        # first, get the information given by the Property Details API
+        property_details = Zillow::Api::GetUpdatedPropertyDetails.new({zpid: zpid}).execute['updatedPropertyDetails']['response']
 
-        prop_req = Request.new(path: @path, options: opts)
-        property_results = prop_req.execute['updatedPropertyDetails']['response']
+        # then, get the information given by the Deep Search Results API
+        address = property_details['address']
+        ds_opts = {
+          :address => address['street'],
+          :citystatezip => "#{address['city']}, #{address['state']}",
+          :rentzestimate => true
+        }
+        deep_search_details = Zillow::Api::GetDeepSearchResults.new(ds_opts).execute['searchresults']['response']['results']['result']
 
-        ds = DeepSearch.new(address: property_results['address']['street'], citystatezip: "#{property_results['address']['city']}, #{property_results['address']['state']}")
-        ds_results = ds.execute
+        # some of the data from the two APIs overlap, in which case we'll give precedence
+        # to results from the Property Details API
+        attrs = deep_search_details.merge(property_details)
 
-
-        # some of the data from the two APIs overlaps, in which case we'll
-        # give precedence to results from the Property Data API
-        atts = ds_results.merge(property_results)
-
-        self.new(atts)
+        self.new(attrs)
       end
 
 
@@ -71,25 +67,35 @@ module Zillow
       # prop = ZillowApi::Property.where(address: '2114 Bigelow Ave', citystatezip: 'Seattle, WA')
       # 
 
-      def self.where(address:, citystatezip:, rentzestimate: false)
-        ds = DeepSearch.new(address: address, citystatezip: citystatezip, rentzestimate: rentzestimate)
-        ds_results = ds.execute
+      def self.where(address:, citystatezip:)
+        # first, get the information given by the Deep Search Results API
+        deep_search_details = Zillow::Api::GetDeepSearchResults.new(address: address, citystatezip: citystatezip, rentzestimate: true).execute['searchresults']['response']['results']['result']
 
-        opts = {:zpid => ds_results['zpid']}
-        prop_req = Request.new(path: @path, options: opts)
-        property_results = prop_req.execute['updatedPropertyDetails']['response']
+        # then, get the information given by the Property Details API
+        zpid = deep_search_details['zpid']
+        property_details = Zillow::Api::GetUpdatedPropertyDetails.new({zpid: zpid}).execute['updatedPropertyDetails']['response']
 
-        # some of the data from the two APIs overlaps, in which case we'll
-        # give precedence to results from the Property Data API
-        atts = ds_results.merge(property_results)
+        # some of the data from the two APIs overlap, in which case we'll give precedence
+        # to results from the Property Data API
+        attrs = deep_search_details.merge(property_details)
 
-        self.new(atts)
+        self.new(attrs)
       end
 
-      def set_readers(att, value)
-        self.class_eval { attr_reader att.rubify }
-        self.instance_variable_set("@#{att.rubify}", value)
-      end
+      protected
+
+        def set_readers(att, value)
+          self.class_eval { attr_reader att.rubify }
+          self.instance_variable_set("@#{att.rubify}", value)
+        end
+
+        def self.find_one(zpid)
+
+        end
+
+        def self.find_many(zpids)
+
+        end
 
     end
   end
