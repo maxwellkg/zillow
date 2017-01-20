@@ -1,25 +1,27 @@
 module ZillowApi
-  class Zestimate < Base
-    @path = 'GetZestimate'
-
-    @valid_params = {
-      :zpid => {:required => true},
-      :count => {:required => true},
-      :rentzestimate => {:required => false}
-    }
+  class Zestimate
 
     # Zestimates can either be instantiated through:
     #   1. A call to the GetZestimate ZPI (ZillowApi::Zestimate)
     #   2. A call to the DeepSearchResults API (ZillowApi::DeepSearch)
+    #   3. Instantiation of an instance of ZillowApi::Property
     #
     # Zestimates can also be associated with an object of class
     # ZillowApi::Property (because objects of this class require a
     # a DeepSearch to be performed in their instantiation)
+    #
+    # Instances of ZillowApi::Zestimate may or may not have a corresponding
+    # instance of ZillowApi::RentZestimate
 
     def initialize(attrs)
       attrs.each do |k,v|
-        self.class_eval { attr_reader k }
-        self.instance_variable_set("@#{k}", v)
+        if k == 'zestimate'
+          v.each do |att, val|
+            set_readers(att, val)
+          end
+        else
+          set_readers(k,v)
+        end
       end
     end
 
@@ -32,26 +34,17 @@ module ZillowApi
     #
     # @example
     # ZillowApi::Zestimate.where(zpid: '48749425')
-    # ZillowApi::Zestimate.where(zpid: '48749425', count: 10, rentzestimate: true)
+    # ZillowApi::Zestimate.where(zpid: '48749425', rentzestimate: true)
 
     def self.where(options)
-      validate_options(options)
-
-
+      self.new(ZillowApi::Api::Calls::GetZestimate.new(options).execute['zestimate']['response'])
     end
 
     private
 
-      def self.validate_options(options)
-        required_params = @valid_params.select { |k,v| k if v[:required] == true }.keys
-
-        if required_params.any? { |p| !options.include?(p) }
-          raise "Please specify the required params: #{required_params.join(', ')}"
-        end
-
-        if options.any? { |opt| !@valid_params.include?(opt) }
-          raise "Options (#{options}) include invalid parameters"
-        end
+      def set_readers(att, value)
+        self.class_eval { attr_reader att.rubify }
+        self.instance_variable_set("@#{att.rubify}", value)
       end
 
   end

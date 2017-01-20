@@ -1,5 +1,5 @@
 module ZillowApi
-  class Property < Base
+  class Property
     extend ZillowApi::Inflector
 
     @path = 'GetUpdatedPropertyDetails'
@@ -21,6 +21,10 @@ module ZillowApi
           # attach a corresponding ZillowApi::Zestimate
           self.class_eval { attr_reader :zestimate }
           self.instance_variable_set("@zestimate", Zestimate.new(v.merge({:property => self})))
+        elsif k == 'rentzestimate'
+          # attach a corresponding ZillowApi::RentZestimate
+          self.class_eval { attr_reader :rent_zestimate }
+          self.instance_variable_set("@rentzestimate", RentZestimate.new(v.merge({:property => self})))
         else
           self.set_readers(k, v)
         end

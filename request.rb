@@ -32,5 +32,16 @@ module ZillowApi
       end
     end
 
+    private
+
+      def lower_camelize(opts)
+        lower_camelized = {}
+        opts.each do |k,v|
+          lower_camelized[k.to_s.camelize(:lower)]
+        end
+
+        lower_camelized
+      end
+
   end
 end
