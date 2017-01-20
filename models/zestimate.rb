@@ -28,6 +28,14 @@ module Zillow
       end
 
       # Find a Zestimate from the property's Zillow Property ID
+      # Does not return a corresponding RentZestimate
+
+      def self.find(zpid)
+        self.where({zpid: zpid})
+      end
+
+      # Find a Zestimate from the property's Zillow Property ID
+      # Returns a corresponding RentZestimate if specified
       #
       # Params:
       # +zpid+:: The Zillow Property ID for the property for which to obtain information; the parameter type is an integer
@@ -39,7 +47,7 @@ module Zillow
       # Zillow::Models::Zestimate.where(zpid: '48749425', rentzestimate: true)
 
       def self.where(options)
-        self.new(ZillowApi::Api::Calls::GetZestimate.new(options).execute['zestimate']['response'])
+        self.new(Zillow::Api::GetZestimate.new(options).execute['zestimate']['response'])
       end
 
       private

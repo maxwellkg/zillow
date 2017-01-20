@@ -21,10 +21,9 @@ module Zillow
       end
 
       def find(zpid)
-
+        Zillow::Models::Zestimate.where(zpid: zpid, rentzestimate: true).rent_zestimate
       end
 
-      
     end
   end
 end
