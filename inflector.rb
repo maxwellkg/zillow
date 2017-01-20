@@ -1,4 +1,4 @@
-module ZillowApi
+module Zillow
   module Inflector
 
     String.send(:include, self)

@@ -13,7 +13,7 @@ module ZillowApi
         #
         #
         # Example call:
-        # ZillowApi::Api::Calls::GetDeepSearchResults.new({address: '2114 Bigelow Ave', citystatezip: 'Seattle, WA'}).execute
+        # Zillow::Api::GetDeepSearchResults.new({address: '2114 Bigelow Ave', citystatezip: 'Seattle, WA'}).execute
         #
 
         PATH = 'GetDeepSearchResults'.freeze
