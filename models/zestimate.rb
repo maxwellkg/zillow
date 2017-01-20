@@ -29,9 +29,26 @@ module Zillow
 
       # Find a Zestimate from the property's Zillow Property ID
       # Does not return a corresponding RentZestimate
+      #
+      # @params
+      # single zpid will return an instance of Zillow::Models::Zestimate
+      # array of zpids will return an array of instances of Zillow::Models::Zestimate
+      #
+      # @example
+      # Zillow::Models::Zestimate.find(48749425)
+      # Zillow::Models::Zestimate.find(48749425, 52494787)
+      # Zillow::Models::Zestimate.find([48749425, 52494787])
+      #
 
-      def self.find(zpid)
-        self.where({zpid: zpid})
+      def self.find(*args)
+        args.flatten!
+        if args.empty?
+          raise ArgumentError, "Please provide a zpid or series of zpids"
+        elsif args.size == 1
+          find_one(args.first)
+        else
+          find_many(args)
+        end
       end
 
       # Find a Zestimate from the property's Zillow Property ID
@@ -55,6 +72,16 @@ module Zillow
         def set_readers(att, value)
           self.class_eval { attr_reader att.rubify }
           self.instance_variable_set("@#{att.rubify}", value)
+        end
+
+        def self.find_one(zpid)
+          self.where({zpid: zpid})
+        end
+
+        def self.find_many(zpids)
+          zpids.collect do |zpid|
+            self.find_one(zpid)
+          end
         end
 
     end
