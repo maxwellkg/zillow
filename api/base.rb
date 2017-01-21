@@ -28,6 +28,8 @@ module Zillow
       def execute
         @result = Request.new(path: self.class.const_get(:PATH), options: @params).execute
         @loaded = true
+
+        check_result_for_errors
         @result
       end
 
@@ -52,6 +54,14 @@ module Zillow
           if params.keys.any? { |param| !valid_params.keys.include?(param) }
             raise "Parameters (#{params}) include invalid parameters"
           end
+        end
+
+        def response_message
+        end
+
+        def check_result_for_errors
+          msg = self.response_message
+          raise ZillowApiError.new(msg.gsub('Error: ','')) if msg.include?('Error')
         end
 
     end

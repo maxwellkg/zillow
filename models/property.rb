@@ -36,7 +36,9 @@ module Zillow
 
       def self.find(zpid)
         # first, get the information given by the Property Details API
-        property_details = Zillow::Api::GetUpdatedPropertyDetails.new({zpid: zpid}).execute['updatedPropertyDetails']['response']
+        # in the case that there are no details for this zpid, we will be unable to 
+        # instantiate an object of this class
+        property_details =  Zillow::Api::GetUpdatedPropertyDetails.new({zpid: zpid}).execute['updatedPropertyDetails']['response']
 
         # then, get the information given by the Deep Search Results API
         address = property_details['address']
@@ -72,8 +74,14 @@ module Zillow
         deep_search_details = Zillow::Api::GetDeepSearchResults.new(address: address, citystatezip: citystatezip, rentzestimate: true).execute['searchresults']['response']['results']['result']
 
         # then, get the information given by the Property Details API
+        # in some cases, there may be no details, in which case we will instantiate
+        # the object using only the results of the deep search
         zpid = deep_search_details['zpid']
-        property_details = Zillow::Api::GetUpdatedPropertyDetails.new({zpid: zpid}).execute['updatedPropertyDetails']['response']
+        property_details =  begin
+                              Zillow::Api::GetUpdatedPropertyDetails.new({zpid: zpid}).execute['updatedPropertyDetails']['response']
+                            rescue ZillowApiError
+                              {}
+                            end
 
         # some of the data from the two APIs overlap, in which case we'll give precedence
         # to results from the Property Data API

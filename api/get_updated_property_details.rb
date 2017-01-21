@@ -18,6 +18,16 @@ module Zillow
         :zpid => {:required => true}
       }
 
+      protected
+
+        def response_message
+          if loaded?
+            result['updatedPropertyDetails']['message']['text']
+          else
+            nil
+          end
+        end
+
     end
   end
 end
